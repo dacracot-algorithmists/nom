@@ -1,0 +1,50 @@
+#!/bin/bash
+# --------------------------------
+# unknown user
+curl -X GET "http://localhost:8080/babel/workflow?user=xyz1&event=new&payload="
+# known user, without permission
+curl -X GET "http://localhost:8080/babel/workflow?user=harry1&event=new&payload="
+# known user, with permission
+curl -X GET "http://localhost:8080/babel/workflow?user=joe1&event=new&payload="
+# known user, with permission, unlocked target
+curl -X GET "http://localhost:8080/babel/workflow?user=joe1&event=edit&payload=10027"
+# known user but different, with permission, locked target
+curl -X GET "http://localhost:8080/babel/workflow?user=mary1&event=edit&payload=10027"
+# --------------------------------
+# submit by admin
+curl -X GET "http://localhost:8080/babel/workflow?user=joe1&event=edit&payload=10027"
+curl -X POST "http://localhost:8080/babel/workflow?user=joe1&event=submit&payload=10027"
+# acknowledge by host
+curl -X GET "http://localhost:8080/babel/workflow?user=mary1&event=acknowledge&payload=10027"
+curl -X POST "http://localhost:8080/babel/workflow?user=mary1&event=acknowledge&payload=10027"
+# proceed by CZAR
+curl -X GET "http://localhost:8080/babel/workflow?user=jane1&event=proceed&payload=10027"
+curl -X POST "http://localhost:8080/babel/workflow?user=jane1&event=proceed&payload=10027"
+# approved by SME1
+curl -X GET "http://localhost:8080/babel/workflow?user=joe2&event=approve&payload=10027"
+curl -X POST "http://localhost:8080/babel/workflow?user=joe2&event=approve&payload=10027"
+# approved by SME3
+curl -X GET "http://localhost:8080/babel/workflow?user=harry1&event=approve&payload=10027"
+curl -X POST "http://localhost:8080/babel/workflow?user=harry1&event=approve&payload=10027"
+# approved by SME2
+curl -X GET "http://localhost:8080/babel/workflow?user=bob1&event=approve&payload=10027"
+curl -X POST "http://localhost:8080/babel/workflow?user=bob1&event=approve&payload=10027"
+# approved by CZAR
+curl -X GET "http://localhost:8080/babel/workflow?user=jane1&event=final&payload=10027"
+curl -X POST "http://localhost:8080/babel/workflow?user=jane1&event=final&payload=10027"
+# --------------------------------
+# arrive by admin
+curl -X GET "http://localhost:8080/babel/workflow?user=joe1&event=arrive&payload=10027"
+curl -X POST "http://localhost:8080/babel/workflow?user=joe1&event=arrive&payload=10027"
+# exit by host
+curl -X GET "http://localhost:8080/babel/workflow?user=mary1&event=exit&payload=10027"
+curl -X POST "http://localhost:8080/babel/workflow?user=mary1&event=exit&payload=10027"
+# --------------------------------
+curl -X GET "http://localhost:8080/babel/workflow/queue?user=craig11" >> queueTest.xml
+curl -X GET "http://localhost:8080/babel/workflow/queue?user=joe1" >> queueTest.xml
+curl -X GET "http://localhost:8080/babel/workflow/queue?user=mary1" >> queueTest.xml
+curl -X GET "http://localhost:8080/babel/workflow/queue?user=jane1" >> queueTest.xml
+curl -X GET "http://localhost:8080/babel/workflow/queue?user=joe2" >> queueTest.xml
+curl -X GET "http://localhost:8080/babel/workflow/queue?user=bob1" >> queueTest.xml
+curl -X GET "http://localhost:8080/babel/workflow/queue?user=harry1" >> queueTest.xml
+
