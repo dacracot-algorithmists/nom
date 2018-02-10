@@ -8,6 +8,7 @@ if [ -z "$WHEREAMI" ]; then
 fi
 # --------------------------------
 export JAVA_HOME=$(/usr/libexec/java_home -v1.8)
+export DYLD_LIBRARY_PATH=/Applications/instantclient_11_2/
 export ANT_HOME=$WHEREAMI/ant
 export PATH=$PATH:$ANT_HOME/bin
 export TOMCAT_HOME=$WHEREAMI/tomcat
@@ -23,11 +24,12 @@ case "$1" in
 		echo -----------------------------
 		;;
 	*)
-		ant
-		if [ $? = 0 ] ; then
+		cd src/sql/
+		sqlplus nom/n0mb8by@vm3 @nom.all.sql
+		grep -e "LINE/COL ERROR" -e "ERROR at" nom.all.sql.err
+		if [ $? = 1 ] ; then
 			echo -----------------------------
-			ant clean
-			echo -----------------------------
+			cd ../..
 			unitTest > test.txt
 			echo -----------------------------
 			say "success"
