@@ -1,0 +1,68 @@
+<!-- ======================================================================= -->
+<project name="nom" default="main" basedir="./">
+	<!-- =================================================================== -->
+	<!-- get enviroment from OS -->
+	<!-- =================================================================== -->
+	<property environment="env"/>
+	<!-- =================================================================== -->
+	<!-- set misc properties -->
+	<!-- =================================================================== -->
+	<buildnumber file="build.number"/>
+	<property name="name" value="nom"/>
+	<property name="version" value="0.3"/>
+	<property name="JDK" value="1.8"/>
+	<property name="db.login" value="nom/n0mb8by@vm3"/>
+	<!-- =================================================================== -->
+	<!-- clean everything -->
+	<!-- =================================================================== -->
+	<target name="clean" description="remove clutter">
+		<echo message="clean --------------------------------------"/>
+		<delete dir="tmp"/>
+		<delete dir="deploy"/>
+		<delete>
+			<fileset dir="./" includes="src/sql/*.sql.err"/>
+			<fileset dir="./" includes="*.out"/>
+			<fileset dir="./" includes="*.err"/>
+		</delete>
+		<echo message="clean --------------------------------------"/>
+	</target>
+	<!-- =================================================================== -->
+	<!-- load plsql -->
+	<!-- =================================================================== -->
+	<target name="compile.plsql" description="compile plsql">
+		<echo message="compile.plsql ------------------------"/>
+		<mkdir dir="tmp/log"/>
+		<exec dir="src/sql" executable="sqlplus" failonerror="true" output="src/sql/nom.all.sql.err">
+			<arg value="${db.login}"/>
+			<arg value="@nom.all.sql"/>
+		</exec>
+		<echo message="looking for plsql errors -------------------"/>
+		<exec dir="src/sql" executable="grep" failonerror="false" resultproperty="found">
+			<arg value="LINE/COL ERROR"/>
+			<arg value="nom.all.sql.err"/>
+		</exec>
+		<fail message="plsql compile errors">
+			<condition>
+				<equals arg1="${found}" arg2="0"/>
+			</condition>
+		</fail>
+		<echo message="looking for line item errors ---------------"/>
+		<exec dir="src/sql" executable="grep" failonerror="false" resultproperty="found">
+			<arg value="ERROR at"/>
+			<arg value="nom.all.sql.err"/>
+		</exec>
+		<fail message="sql compile errors">
+			<condition>
+				<equals arg1="${found}" arg2="0"/>
+			</condition>
+		</fail>
+		<echo message="compile.plsql ------------------------"/>
+	</target>
+	<!-- =================================================================== -->
+	<!-- default -->
+	<!-- =================================================================== -->
+	<target name="main" depends="clean, compile.plsql" description="default">
+	</target>
+	<!-- =================================================================== -->
+</project>
+<!-- ======================================================================= -->
